@@ -1,0 +1,14 @@
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+*.bak
+*.orig
+
+# Build/artifacts you might drop in
+*.pbo
+*.zip
+
+# Logs if you ever dump any here
+*.log
