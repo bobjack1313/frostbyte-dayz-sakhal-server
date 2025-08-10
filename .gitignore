@@ -4,6 +4,8 @@ Thumbs.db
 *.swp
 *.tmp
 *.bak
+*.bak_*
+db.bak_*/
 *.orig
 
 # Build/artifacts you might drop in
@@ -12,3 +14,14 @@ Thumbs.db
 
 # Logs if you ever dump any here
 *.log
+
+# Live persistence
+storage_1/
+storage_2/
+storage_3/
+storage_4/
+*.bin
+
+# Mod-specific save data
+pra/warheadstorage.json
+
