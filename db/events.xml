@@ -626,7 +626,7 @@
             <child lootmax="5" lootmin="0" max="0" min="5" type="ZmbM_HunterOld_Winter"/>
         </children>
     </event>
-    <event name="InfectedWilderness" type="Infected" nominal="50" min="0" max="2" lifetime="1200" restock="900">
+    <event name="InfectedWilderness" type="Infected" nominal="200" min="0" max="2" lifetime="1200" restock="900">
         <saferadius>100</saferadius>
         <distanceradius>100</distanceradius>
         <cleanupradius>300</cleanupradius>
@@ -634,7 +634,7 @@
         <position>player</position>
         <active>1</active>
         <children>
-            <child type="ZmbM_Santa" min="1" max="4" lootmin="1" lootmax="1"/>
+            <child type="ZmbF_NurseFat_Winter" min="3" max="5" lootmin="1" lootmax="1"/>
         </children>
     </event>
     <event name="InfectedVillage">
