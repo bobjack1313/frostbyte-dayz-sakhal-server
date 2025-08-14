@@ -311,7 +311,7 @@ class CustomMission: MissionServer
         ReplaceSlotServer(player, "Head", "Headdress_Wolf", 0.65, 0.80);
 
         // bag — pristine (20 slots)
-        ref array<string> shamanBag = { "SlingBag_Black", "SlingBag_Brown", "SlingBag_Gray" }
+        ref array<string> shamanBag = { "SlingBag_Black", "SlingBag_Brown", "SlingBag_Gray" };
 
         EntityAI bag = ReplaceSlotServer(player, "Back", shamanBag[Math.RandomInt(0, shamanBag.Count())], 0.65, 0.90);
 

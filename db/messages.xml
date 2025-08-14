@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages>
+    <message>
+        <onconnect>1</onconnect>
+        <delay>0</delay>
+        <text>Welcome to the Achilles server! /help shows you what’s available.</text>
+    </message>
+    <message>
+        <onconnect>1</onconnect>
+        <delay>1</delay>
+        <text>Server restarts every 7 hours. Watch for countdowns.</text>
+    </message>
+    <message>
+        <onconnect>1</onconnect>
+        <delay>2</delay>
+        <text>No cheating. No exploiting. Report issues via /report or Discord.</text>
+    </message>
+    <message>
+        <repeat>60</repeat>
+        <text>This is Achilles. /help has your survival quick-guide. Report issues via /report or Discord.</text>
+    </message>
+    <message>
+	<delay>5</delay>
+        <repeat>35</repeat>
+        <text>Monitor radio frequency 87.8 MHz for special alerts.</text>
+    </message>
+   <message>
+        <delay>15</delay>
+        <repeat>45</repeat>
+        <text>Each time you spawn, you can get a different themed loadout. Experience them all!</text>
+    </message>
+</messages>
