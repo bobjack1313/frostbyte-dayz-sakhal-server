@@ -21,12 +21,27 @@
     </message>
     <message>
 	<delay>5</delay>
-        <repeat>35</repeat>
+        <repeat>30</repeat>
         <text>Monitor radio frequency 87.8 MHz for special alerts.</text>
     </message>
    <message>
         <delay>15</delay>
-        <repeat>45</repeat>
+        <repeat>75</repeat>
         <text>Each time you spawn, you can get a different themed loadout. Experience them all!</text>
+    </message>
+    <message>
+        <delay>5</delay>
+        <repeat>0</repeat>
+        <text>This message is a no repeater with a 5 minute delay.</text>
+    </message>
+    <message>
+        <delay>5</delay>
+        <repeat>0</repeat>
+        <text>This message is a no repeater with a 5 minute delay.</text>
+    </message>
+    <message>
+        <delay>7</delay>
+        <repeat>0</repeat>
+        <text>This message is a no repeater with a 7 minute delay.</text>
     </message>
 </messages>
