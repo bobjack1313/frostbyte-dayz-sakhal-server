@@ -2,17 +2,35 @@
 set -euo pipefail
 
 ROOT="/home/dayzserver/dayz"
-LOG="$ROOT/profiles/console.log"
+PROFILES="$ROOT/profiles"
+LOG="$PROFILES/console.log"
+SESSION="dayz"
 
 cd "$ROOT"
-tmux kill-session -t dayz 2>/dev/null || true
 
-exec tmux new-session -d -s dayz -- bash -lc '
-  export LD_LIBRARY_PATH="/home/dayzserver/dayz/battleye:${LD_LIBRARY_PATH:-}";
-  ./DayZServer \
+# Make sure the app id file exists so Steam login doesn’t act weird
+[[ -f "$ROOT/steam_appid.txt" ]] || echo 221100 > "$ROOT/steam_appid.txt"
+
+# Kill any old session
+tmux kill-session -t "$SESSION" >/dev/null 2>&1 || true
+
+# Launch using the ROOT binary (not bin/)
+tmux new-session -d -s "$SESSION" bash -lc '
+  set -euo pipefail
+  export LD_LIBRARY_PATH="'"$ROOT"':'"$ROOT"'/bin:'"$ROOT"'/battleye:${LD_LIBRARY_PATH:-}"
+
+  exec '"$ROOT"'/DayZServer \
     -config=serverDZ.cfg \
     -port=2302 \
+    -steamPort=2304 \
+    -steamQueryPort=2305 \
+    -ip=0.0.0.0 \
+    -profiles="'"$PROFILES"'" \
+    -mission="./mpmissions/dayzOffline.sakhal" \
+    -BEpath="'"$ROOT"'/battleye" \
     -dologs -adminlog -netlog -scrAllowFileWrite \
-    -profiles=/home/dayzserver/dayz/profiles \
-    -mission=./mpmissions/dayzOffline.sakhal \
-    -BEpath=/home/dayzserver/dayz/battleye |& tee -a /home/dayzserver/dayz/profiles/console.log'
+    |& tee -a "'"$LOG"'"
+'
+
+echo "Started in tmux: $SESSION  (tmux attach -t $SESSION)"
+echo "Log: $LOG"

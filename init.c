@@ -1,10 +1,135 @@
+// ====== GLOBALS ======
+ref Timer g_WeatherTimer;
+
+// --- Name cache (persisted) ---
+autoptr map<string, string> g_NameCache = new map<string, string>();
+
+string NameCachePath()
+{
+    return "$profile:name_cache.csv";
+}
+
+void LoadNameCache()
+{
+    FileHandle f = OpenFile(NameCachePath(), FileMode.READ);
+    if (!f) return;
+
+    string line;
+    while (FGets(f, line) > 0)
+    {
+        line.Trim();
+        if (line == "") continue;
+        if (line.Length() > 0 && line.Substring(0, 1) == "#") continue;
+
+        TStringArray kv = new TStringArray;
+        line.Split(",", kv);
+        if (kv.Count() >= 2) g_NameCache.Set(kv[0], kv[1]); // uid,name
+    }
+    CloseFile(f);
+}
+
+void SaveNameKV(string uid, string name)
+{
+    if (uid == "" || name == "" || name == "Survivor") return;
+    g_NameCache.Set(uid, name);
+    FileHandle f = OpenFile(NameCachePath(), FileMode.APPEND);
+    if (f) { FPrintln(f, uid + "," + name); CloseFile(f); }
+}
+
+// --- Radio logger ---
+void LogRadio(string line)
+{
+    FileHandle fh = OpenFile("$profile:radio_events.log", FileMode.APPEND);
+    if (fh != 0)
+    {
+        int y, mo, d, h, mi;
+        GetGame().GetWorld().GetDate(y, mo, d, h, mi); // 5 args only
+        string ts = string.Format("%1-%2-%3 %4:%5", y, mo, d, h, mi);
+        FPrintln(fh, string.Format("%1 [RADIO_EVENT] %2", ts, line));
+        CloseFile(fh);
+    }
+}
+
+// --- Utils ---
+string GridRef(vector p)
+{
+    int gx = Math.Round(p[0] / 100) * 100;
+    int gz = Math.Round(p[2] / 100) * 100;
+    return string.Format("%1,%2", gx, gz);
+}
+
+string SafeName(PlayerBase p)
+{
+    if (!p) return "Unknown";
+
+    PlayerIdentity id = p.GetIdentity();
+    string nm = "Unknown";
+    string uid = "";
+
+    if (id)
+    {
+        nm  = id.GetName();
+        uid = id.GetPlainId();
+    }
+
+    // Try cached name if current is empty/generic
+    string cached;
+    if ((nm == "" || nm == "Survivor") && uid != "" && g_NameCache && g_NameCache.Find(uid, cached))
+    {
+        nm = cached;
+    }
+
+    // Last-ditch: append short UID
+    if (nm == "" || nm == "Survivor")
+    {
+        int len = uid.Length();
+        int start = 0;
+        if (len > 6) start = len - 6;
+
+        string tail = "";
+        if (len > 0) tail = uid.Substring(start, len - start);
+
+        if (tail != "")
+        {
+            nm = "Survivor[" + tail + "]";
+        }
+        else
+        {
+            nm = "Survivor";
+        }
+    }
+
+    return nm;
+}
+
+string KillerLabel(Object killerObj, PlayerBase victim = null)
+{
+    if (!killerObj) return "Environment";
+
+    PlayerBase kp = PlayerBase.Cast(killerObj);
+    if (kp) {
+        if (victim && kp == victim) return "Suicide";
+        return SafeName(kp);
+    }
+
+    DayZInfected zi = DayZInfected.Cast(killerObj);
+    if (zi) return "Infected";
+
+    AnimalBase ab = AnimalBase.Cast(killerObj);
+    if (ab) return ab.GetType();
+
+    EntityAI ent = EntityAI.Cast(killerObj);
+    if (ent) return ent.GetType();
+
+    return killerObj.GetType();
+}
+
+// ====== MAIN ======
 void main()
 {
-    // INIT ECONOMY --------------------------------------
     Hive ce = CreateHive();
     if (ce) ce.InitOffline();
 
-    // DATE RESET AFTER ECONOMY INIT ---------------------
     int year, month, day, hour, minute;
     int reset_month = 2, reset_day = 1;
     GetGame().GetWorld().GetDate(year, month, day, hour, minute);
@@ -15,15 +140,60 @@ void main()
         GetGame().GetWorld().SetDate(year, reset_month, reset_day, hour, minute);
     else if ((month < reset_month) || (month > reset_month + 1))
         GetGame().GetWorld().SetDate(year, reset_month, reset_day, hour, minute);
+
+    // Weather timer
+    g_WeatherTimer = new Timer(CALL_CATEGORY_GAMEPLAY);
+    g_WeatherTimer.Run(60.0, null, "WeatherTick", NULL, true);
 }
 
-class CustomMission: MissionServer
+// Weather tick (global)
+void WeatherTick()
 {
-    int mThemeIndex; // advances each spawn
+    Weather w = g_Game.GetWeather();
+    float wind = w.GetWindSpeed();
+    float over = w.GetOvercast().GetActual();
+    float rain = w.GetRain().GetActual();
+    float fog  = w.GetFog().GetActual();
+
+    if (wind > 20 || rain > 0.6 || over > 0.9) {
+        LogRadio(string.Format("WEATHER wind=%.1f over=%.2f rain=%.2f fog=%.2f", wind, over, rain, fog));
+    }
+}
+
+// ====== MISSION CLASS ======
+class CustomMission : MissionServer
+{
+    int mThemeIndex;
 
     void CustomMission()
     {
-        mThemeIndex = LoadThemeIndex(); // optional persistence
+        // constructor
+        LoadNameCache();
+        mThemeIndex = LoadThemeIndex();
+    }
+
+    override void OnEvent(EventType eventTypeId, Param params)
+    {
+        super.OnEvent(eventTypeId, params);
+
+        if (eventTypeId == PlayerDeathEventTypeID)
+        {
+            Param2<DayZPlayer, Object> p = Param2<DayZPlayer, Object>.Cast(params);
+            if (!p) return;
+
+            PlayerBase victim = PlayerBase.Cast(p.param1);
+            if (!victim) return;
+
+            string vname = SafeName(victim);
+            string vuid  = "NA";
+            PlayerIdentity vid = victim.GetIdentity();
+            if (vid) vuid = vid.GetPlainId();
+
+            string kname = KillerLabel(p.param2, victim);
+            string grid  = GridRef(victim.GetPosition());
+
+            LogRadio(string.Format("DEATH Victim=\"%1\" UID=%2 Killer=\"%3\" Pos=%4", vname, vuid, kname, grid));
+        }
     }
 
     // Persist across restarts (in $profile)
@@ -1142,7 +1312,11 @@ class CustomMission: MissionServer
         // Server only. Then let vanilla finish dressing first.
         if (!GetGame().IsServer()) return;
         super.StartingEquipSetup(player, clothesChosen);
-        // EquipNextTheme(player);
+
+        PlayerIdentity id = player.GetIdentity();
+        if (id) SaveNameKV(id.GetPlainId(), id.GetName());
+       
+ // EquipNextTheme(player);
         bool male = player.IsMale();
 
         // Weights

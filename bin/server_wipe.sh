@@ -4,7 +4,7 @@ set -euo pipefail
 # --- Config you probably won't need to change ---
 ROOT="${HOME}/dayz"
 MISSION="${ROOT}/mpmissions/dayzOffline.sakhal"
-STORE="${MISSION}/storage_1"   # <-- no space after =
+STORE="${MISSION}/storage_1"   # persistence lives here on your setup
 
 # Time-state files we want to wipe for a "time reset"
 TIME_FILES=(
@@ -14,10 +14,14 @@ TIME_FILES=(
 )
 
 # Player DB files live in the mission store on your setup
+# Include SQLite sidecars just in case
 PLAYERS_DB_GLOBS=(
   "${STORE}/players.db"
   "${STORE}/players.db-*"
   "${STORE}/players.*.db"
+  "${STORE}/players.db-journal"
+  "${STORE}/players.db-shm"
+  "${STORE}/players.db-wal"
 )
 
 banner() { echo -e "\n=== $* ===\n"; }
@@ -39,15 +43,6 @@ confirm_twice() {
 }
 
 DID_ANYTHING=0
-run_if_confirmed() {
-  local msg="$1"; shift
-  if confirm_twice "$msg"; then
-    DID_ANYTHING=1
-    "$@"
-  else
-    echo "No action taken."
-  fi
-}
 
 # --- Preview helpers (context-aware) ---
 show_time_targets() {
@@ -62,7 +57,7 @@ show_player_targets() {
   echo "Players DB location:"
   echo "  - $STORE"
   echo "Will remove player DB files (if present):"
-  printf "  - %s\n" "$STORE"/players.db*
+  printf "  - %s\n" "$STORE"/players.db "$STORE"/players.db-*
 }
 
 show_store_targets() {
@@ -107,6 +102,7 @@ wipe_players() {
   local found=0
   shopt -s nullglob
   for g in "${PLAYERS_DB_GLOBS[@]}"; do
+    # Expand each glob; with nullglob on, missing patterns drop out
     for f in $g; do
       [[ -e "$f" ]] || continue
       echo "Deleting: $f"
@@ -142,29 +138,32 @@ EOF
     1)
       show_time_targets
       if confirm_twice "Reset time files now?"; then
-        #echo "[TEST MODE] Would run: stop_server_hint; wipe_time"
         stop_server_hint
         wipe_time
         DID_ANYTHING=1
+      else
+        echo "No action taken."
       fi
       ;;
     2)
       show_player_targets
       if confirm_twice "Wipe ALL player data now?"; then
-        #echo "[TEST MODE] Would run: stop_server_hint; wipe_players"
         stop_server_hint
         wipe_players
         DID_ANYTHING=1
+      else
+        echo "No action taken."
       fi
       ;;
     3)
       show_store_targets
       active_store_hint
       if confirm_twice "Wipe server persistence (storage_1) now?"; then
-        #echo "[TEST MODE] Would run: stop_server_hint; wipe_server"
         stop_server_hint
         wipe_server
         DID_ANYTHING=1
+      else
+        echo "No action taken."
       fi
       ;;
     4)
@@ -173,12 +172,13 @@ EOF
       show_store_targets
       active_store_hint
       if confirm_twice "WIPE EVERYTHING (time files + players + storage)?"; then
-        #echo "[TEST MODE] Would run: stop_server_hint; wipe_time; wipe_players; wipe_server"
         stop_server_hint
         wipe_time
         wipe_players
         wipe_server
         DID_ANYTHING=1
+      else
+        echo "No action taken."
       fi
       ;;
     q|Q) echo "Bye."; exit 0 ;;
