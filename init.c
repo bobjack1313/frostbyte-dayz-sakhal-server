@@ -143,7 +143,7 @@ void main()
 
     // Weather timer
     g_WeatherTimer = new Timer(CALL_CATEGORY_GAMEPLAY);
-    g_WeatherTimer.Run(60.0, null, "WeatherTick", NULL, true);
+    g_WeatherTimer.Run(60.0, NULL, "WeatherTick", NULL, true);
 }
 
 // Weather tick (global)
@@ -155,6 +155,10 @@ void WeatherTick()
     float rain = w.GetRain().GetActual();
     float fog  = w.GetFog().GetActual();
 
+    // Debug log every tick
+    ACHLog(string.Format("[WEATHER] wind=%.1f over=%.2f rain=%.2f fog=%.2f", wind, over, rain, fog));
+
+    // Only push to radio if severe
     if (wind > 20 || rain > 0.6 || over > 0.9) {
         LogRadio(string.Format("WEATHER wind=%.1f over=%.2f rain=%.2f fog=%.2f", wind, over, rain, fog));
     }
