@@ -170,6 +170,28 @@ class CustomMission : MissionServer
         // constructor
         LoadNameCache();
         mThemeIndex = LoadThemeIndex();
+        ACHLog("Custom Mission loaded> ACHLog is working.");
+}
+
+    // --- Name cache helper
+    void WriteNameCache(PlayerIdentity id)
+    {
+        if (!id) return;
+        string uid = id.GetId();
+        string name = id.GetName();
+        if (name == "" || name == "Survivor") return;
+
+        FileHandle f = OpenFile("$profile:name_cache.csv", FileMode.APPEND);
+        if (f) {
+            FPrintln(f, uid + "," + "\"" + name + "\"");
+            CloseFile(f);
+        }
+    }
+
+    // Hook runs when client is fully ready
+    void OnClientReady_NameCache(PlayerIdentity identity, PlayerBase player)
+    {
+        WriteNameCache(identity);
     }
 
     override void OnEvent(EventType eventTypeId, Param params)
@@ -193,6 +215,30 @@ class CustomMission : MissionServer
             string grid  = GridRef(victim.GetPosition());
 
             LogRadio(string.Format("DEATH Victim=\"%1\" UID=%2 Killer=\"%3\" Pos=%4", vname, vuid, kname, grid));
+        }
+        else if (eventTypeId == ClientReadyEventTypeID)
+        {
+            // Try multiple param shapes for ClientReady
+            PlayerIdentity pid = null;
+            PlayerBase pbase = null;
+
+            Param2<PlayerIdentity, PlayerBase> pr1 = Param2<PlayerIdentity, PlayerBase>.Cast(params);
+            if (pr1) { pid = pr1.param1; pbase = pr1.param2; }
+            else {
+                Param2<PlayerIdentity, Man> pr2 = Param2<PlayerIdentity, Man>.Cast(params);
+                if (pr2) { pid = pr2.param1; pbase = PlayerBase.Cast(pr2.param2); }
+                else {
+                    Param1<PlayerIdentity> pr3 = Param1<PlayerIdentity>.Cast(params);
+                    if (pr3) { pid = pr3.param1; }
+                }
+           }
+
+           if (pid) {
+               ACHLog("[NAMECACHE] ClientReady UID=" + pid.GetId() + " name=" + pid.GetName());
+               WriteNameCache(pid);
+           } else {
+               ACHLog("[NAMECACHE] ClientReady: no PlayerIdentity found in params");
+           }
         }
     }
 
@@ -1234,7 +1280,7 @@ class CustomMission : MissionServer
         ReplaceSlotServer(player, "Back", bagPick, 0.75, 1.0);
 
         ref array<string> bears = { "Bear_Beige","Bear_White","Bear_Dark", "Bear_Pink" };
-        string bearPick = bears[Math.RandomInt(0, bear.Count())];
+        string bearPick = bears[Math.RandomInt(0, bears.Count())];
 
         EntityAI bearMe = PutInAnyClothingCargo(player, bearPick);
         if (bearMe) SetPristine(bearMe);
@@ -1315,8 +1361,8 @@ class CustomMission : MissionServer
 
         PlayerIdentity id = player.GetIdentity();
         if (id) SaveNameKV(id.GetPlainId(), id.GetName());
-       
- // EquipNextTheme(player);
+ 
+        // EquipNextTheme(player);
         bool male = player.IsMale();
 
         // Weights

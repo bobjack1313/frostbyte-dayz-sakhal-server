@@ -34,3 +34,14 @@ tmux new-session -d -s "$SESSION" bash -lc '
 
 echo "Started in tmux: $SESSION  (tmux attach -t $SESSION)"
 echo "Log: $LOG"
+
+sleep 120
+
+# Start radio watcher after DayZ server launch
+BE_DIR="$ROOT/battleye"
+CFG="$(ls -1t "$BE_DIR"/beserver_x64_active_*.cfg 2>/dev/null | head -1)"; [[ -z "$CFG" ]] && CFG="$BE_DIR/beserver_x64.cfg"
+RCON_PASS="$(sed -n 's/^RConPassword[[:space:]]\+//p' "$CFG" | head -1)"
+RCON_PORT="$(sed -n 's/^RConPort[[:space:]]\+//p' "$CFG" | head -1)"
+
+tmux kill-session -t radio >/dev/null 2>&1 || true
+tmux new -s radio -d "RCON_ADDR=127.0.0.1:${RCON_PORT} RCON_PASS='${RCON_PASS}' $ROOT/tools/radio_watcher.sh 2>&1 | tee -a $PROFILES/radio_watcher.out"

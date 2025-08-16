@@ -8,6 +8,9 @@ say() {
   [ -x "$RCON" ] && timeout 4s "$RCON" "say -1 $msg" >/dev/null 2>&1 || true
 }
 
+# stop radio watcher (if running)
+tmux kill-session -t radio >/dev/null 2>&1 || true
+
 # 1) Gentle: notify + BE shutdown
 say "Server restarting in 20 seconds..."
 sleep 15
