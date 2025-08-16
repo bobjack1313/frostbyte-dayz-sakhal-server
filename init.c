@@ -566,7 +566,7 @@ class CustomMission: MissionServer
         ItemBase alc = ItemBase.Cast(PutInAnyClothingCargo(player, "DisinfectantAlcohol"));
         if (alc)
         {
-            alc.SetQuantity(10);           // ~1 disinfect action in vanilla
+            alc.SetQuantity(20);           // ~1 disinfect action in vanilla
             SetRandomHealth(alc);
             player.SetQuickBarEntityShortcut(alc, 1);
         }
@@ -1062,6 +1062,12 @@ class CustomMission: MissionServer
         ref array<string> kidBags = { "ChildBag_Blue","ChildBag_Green","ChildBag_Red" };
         string bagPick = kidBags[Math.RandomInt(0, kidBags.Count())];
         ReplaceSlotServer(player, "Back", bagPick, 0.75, 1.0);
+
+        ref array<string> bears = { "Bear_Beige","Bear_White","Bear_Dark", "Bear_Pink" };
+        string bearPick = bears[Math.RandomInt(0, bear.Count())];
+
+        EntityAI bearMe = PutInAnyClothingCargo(player, bearPick);
+        if (bearMe) SetPristine(bearMe);
 
         EntityAI band = PutInAnyClothingCargo(player, "BandageDressing");
         if (band) { SetPristine(band); player.SetQuickBarEntityShortcut(band, 1); }
