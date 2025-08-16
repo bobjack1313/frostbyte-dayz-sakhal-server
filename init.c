@@ -170,8 +170,18 @@ class CustomMission : MissionServer
         // constructor
         LoadNameCache();
         mThemeIndex = LoadThemeIndex();
-        ACHLog("Custom Mission loaded> ACHLog is working.");
-}
+        GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(RadioHandoffTick, 2000, true);
+    }
+    // === RADIO HANDOFF ===
+    ref Timer m_RadioTimer;
+
+    override void OnInit()
+    {
+        super.OnInit();
+        // Start the repeating check every 2s
+        m_RadioTimer = new Timer(CALL_CATEGORY_SYSTEM);
+        m_RadioTimer.Run(2.0, null, "RadioHandoffTick", null, true);
+    }
 
     // --- Name cache helper
     void WriteNameCache(PlayerIdentity id)
@@ -218,28 +228,88 @@ class CustomMission : MissionServer
         }
         else if (eventTypeId == ClientReadyEventTypeID)
         {
-            // Try multiple param shapes for ClientReady
-            PlayerIdentity pid = null;
-            PlayerBase pbase = null;
-
-            Param2<PlayerIdentity, PlayerBase> pr1 = Param2<PlayerIdentity, PlayerBase>.Cast(params);
-            if (pr1) { pid = pr1.param1; pbase = pr1.param2; }
-            else {
-                Param2<PlayerIdentity, Man> pr2 = Param2<PlayerIdentity, Man>.Cast(params);
-                if (pr2) { pid = pr2.param1; pbase = PlayerBase.Cast(pr2.param2); }
-                else {
-                    Param1<PlayerIdentity> pr3 = Param1<PlayerIdentity>.Cast(params);
-                    if (pr3) { pid = pr3.param1; }
-                }
-           }
-
-           if (pid) {
-               ACHLog("[NAMECACHE] ClientReady UID=" + pid.GetId() + " name=" + pid.GetName());
-               WriteNameCache(pid);
-           } else {
-               ACHLog("[NAMECACHE] ClientReady: no PlayerIdentity found in params");
-           }
+            Param2<PlayerIdentity, PlayerBase> pr = Param2<PlayerIdentity, PlayerBase>.Cast(params);
+            if (pr && pr.param1) {
+                //ACHLog("[NAMECACHE] ClientReady UID=" + pr.param1.GetId() + " name=" + pr.param1.GetName());
+                WriteNameCache(pr.param1);
+            } else {
+                ACHLog("[NAMECACHE] ClientReady: no PlayerIdentity found in params");
+            }
         }
+    }
+
+    // Called by timer every 2s
+    void RadioHandoffTick()
+    {
+        string path = "$profile:radio_cast.tsv";
+        FileHandle f = OpenFile(path, FileMode.READ);
+        if (!f) return;
+
+        string line;
+        ref array<string> keep = new array<string>();
+
+        int now = GetGame().GetTime() / 1000; // seconds
+
+        while (FGets(f, line) > 0) {
+            line.Trim();
+            if (line == "") continue;
+
+            TStringArray cols = new TStringArray();
+            line.Split("\t", cols);
+
+            if (cols.Count() < 2) continue;
+            int due = cols[0].ToInt();
+            string msg = cols[1];
+
+            if (now >= due) {
+                BroadcastToRadioListeners(msg);
+            } else {
+                keep.Insert(line);
+            }
+        }
+        CloseFile(f);
+
+        // Rewrite with future entries
+        f = OpenFile(path, FileMode.WRITE);
+        if (f) {
+            foreach (string row : keep) {
+                FPrintln(f, row);
+            }
+            CloseFile(f);
+        }
+     }
+
+    // Send only to players with powered radios
+    void BroadcastToRadioListeners(string msg)
+    {
+        array<Man> players = new array<Man>();
+        GetGame().GetPlayers(players);
+
+        for (int i = 0; i < players.Count(); i++) {
+            PlayerBase p = PlayerBase.Cast(players[i]);
+            if (!p) continue;
+
+            if (HasWorkingRadio(p)) {
+                p.MessageStatus(msg);
+            }
+        }
+    }
+
+    bool HasWorkingRadio(PlayerBase p)
+    {
+        array<EntityAI> items = new array<EntityAI>();
+        p.GetInventory().EnumerateInventory(InventoryTraversalType.PREORDER, items);
+
+        foreach (EntityAI e : items) {
+            PersonalRadio r = PersonalRadio.Cast(e);
+            if (!r) continue;
+
+            auto em = r.GetCompEM();
+            if (em && em.IsSwitchedOn() && em.IsWorking()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Persist across restarts (in $profile)
