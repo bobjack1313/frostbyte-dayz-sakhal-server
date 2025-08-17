@@ -1,0 +1,198 @@
+class CustomMission : MissionServer
+{
+    // ---- cyclic index persistence ----
+    protected int mThemeIndex;
+
+    protected string ThemeIndexPath()
+    {
+        return "$profile:theme_index.txt";
+    }
+
+    protected int LoadThemeIndex()
+    {
+        int idx = 0;
+        FileHandle f = OpenFile(ThemeIndexPath(), FileMode.READ);
+        if (f) {
+            string s;
+            if (FGets(f, s) > 0) { s.Trim(); idx = s.ToInt(); }
+            CloseFile(f);
+        }
+        return idx;
+    }
+
+    protected void SaveThemeIndex()
+    {
+        FileHandle f = OpenFile(ThemeIndexPath(), FileMode.WRITE);
+        if (!f) return;
+        FPrintln(f, mThemeIndex.ToString());
+        CloseFile(f);
+    }
+
+    void CustomMission()
+    {
+        // constructor
+        LoadNameCache();
+        mThemeIndex = LoadThemeIndex();
+    }
+
+    // === RADIO HANDOFF ===
+    ref Timer m_RadioTimer;
+
+    override void OnInit()
+    {
+        super.OnInit();
+        GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(RadioSchedulerTick, 2000, true);
+        //WeatherService.Start(60.0); // ok if silent for now   
+    }
+
+    void RadioSchedulerTick()
+    {
+        array<string> due = RadioQueue.RunDue();
+        if (!due) return;
+        foreach (string msg : due) {
+            RadioBroadcaster.Broadcast(msg);
+        }
+    }
+
+    override void OnEvent(EventType eventTypeId, Param params)
+    {
+        super.OnEvent(eventTypeId, params);
+
+        if (eventTypeId == PlayerDeathEventTypeID)
+        {
+            Param2<DayZPlayer, Object> p = Param2<DayZPlayer, Object>.Cast(params);
+            if (!p) return;
+
+            PlayerBase victim = PlayerBase.Cast(p.param1);
+            if (!victim) return;
+
+            string vname = SafeName(victim);
+            string vuid  = "NA";
+            PlayerIdentity vid = victim.GetIdentity();
+            if (vid) vuid = vid.GetPlainId();
+
+            string kname = KillerLabel(p.param2, victim);
+            string grid  = GridRef(victim.GetPosition());
+
+            LogRadio(string.Format("DEATH Victim=\"%1\" UID=%2 Killer=\"%3\" Pos=%4", vname, vuid, kname, grid));
+        }
+        else if (eventTypeId == ClientReadyEventTypeID)
+        {
+            Param2<PlayerIdentity, PlayerBase> pr = Param2<PlayerIdentity, PlayerBase>.Cast(params);
+            if (pr && pr.param1) {
+                // write immediately
+                SaveNameKV(pr.param1.GetPlainId(), pr.param1.GetName());
+
+                // if initial name is generic, retry once after 5s
+                if (pr.param1.GetName() == "Survivor") {
+                    string uid_retry = pr.param1.GetPlainId();
+                    GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(SaveNameKV, 5000, false, uid_retry, pr.param1.GetName());
+                }
+            } else {
+                ACHLog("[NAMECACHE] ClientReady: no PlayerIdentity found in params");
+            }
+        }
+    }
+
+    void MissionNowTick()
+    {
+        int now = GetGame().GetTime() / 1000; // seconds since server start
+        FileHandle f = OpenFile("$profile:mission_now.txt", FileMode.WRITE);
+        if (f) { FPrintln(f, now.ToString()); CloseFile(f); }
+    }
+
+    // ---------- Vanilla hooks ----------
+    override PlayerBase CreateCharacter(PlayerIdentity identity, vector pos, ParamsReadContext ctx, string characterName)
+    {
+        Entity playerEnt = GetGame().CreatePlayer(identity, characterName, pos, 0, "NONE");
+        Class.CastTo(m_player, playerEnt);
+        GetGame().SelectPlayer(identity, m_player);
+        return m_player;
+    }
+
+    // ---- cyclic spawn (exact spirit of your EquipNextTheme) ----
+    void EquipNextTheme(PlayerBase player)
+    {
+        bool male = player.IsMale();
+        mThemeIndex = ThemeRegistry.ApplyCyclic(player, male, mThemeIndex);
+        SaveThemeIndex();
+    }
+
+    // ---- weighted spawn (matches your weights/threshold logic) ----
+    void EquipWeightedTheme(PlayerBase player)
+    {
+        bool male = player.IsMale();
+
+        // Names aligned with ThemeRegistry dispatcher
+        ref array<string> names   = new array<string>;
+        ref array<float>  weights = new array<float>;
+
+        //names.Insert("WellieGuy");              weights.Insert(0.0);
+        //names.Insert("Shaman");                 weights.Insert(0.0);
+        //names.Insert("Cowboy");                 weights.Insert(0.0);
+        //names.Insert("Prisoner");               weights.Insert(0.0);
+        //names.Insert("Cop");                    weights.Insert(0.0);
+        //names.Insert("Professional");           weights.Insert(0.0);
+        //names.Insert("SorryNotSorry");          weights.Insert(0.0);
+        //names.Insert("Paramedic");              weights.Insert(0.0);
+        //names.Insert("Nurse");                  weights.Insert(1.0);
+        //names.Insert("Doctor");                 weights.Insert(0.0);
+        //names.Insert("Mummy");                  weights.Insert(0.0);
+        //names.Insert("TrackStar");              weights.Insert(0.0);
+        //names.Insert("Sailor");                 weights.Insert(0.0);
+        //names.Insert("Thug");                   weights.Insert(0.0);
+        //names.Insert("Hiker");                  weights.Insert(0.0);
+        //names.Insert("FlatCapper");             weights.Insert(0.0);
+        //names.Insert("LabRat");                 weights.Insert(0.0);
+        //names.Insert("YesADress");              weights.Insert(0.0);
+        //names.Insert("ConstructionWorker");     weights.Insert(0.0);
+        //names.Insert("BallCapper");             weights.Insert(0.0);
+        //names.Insert("Chalk");                  weights.Insert(0.0);
+
+        names.Insert("WellieGuy");        	weights.Insert(1.0);
+        names.Insert("Shaman");           	weights.Insert(1.0);
+        names.Insert("Cowboy");           	weights.Insert(1.0);
+        names.Insert("Prisoner");         	weights.Insert(0.9);
+        names.Insert("Cop");              	weights.Insert(0.75);
+        names.Insert("Professional");     	weights.Insert(0.9);
+        names.Insert("SorryNotSorry");    	weights.Insert(1.0);
+        names.Insert("Paramedic");        	weights.Insert(0.4);
+        names.Insert("Nurse");            	weights.Insert(0.8);
+        names.Insert("Doctor");           	weights.Insert(0.6);
+        names.Insert("Mummy");            	weights.Insert(1.0);
+        names.Insert("TrackStar");        	weights.Insert(0.8);
+        names.Insert("Sailor");           	weights.Insert(1.0);
+        names.Insert("Thug");             	weights.Insert(1.0);
+        names.Insert("Hiker");            	weights.Insert(0.8);
+        names.Insert("LabRat");           	weights.Insert(0.75);
+        names.Insert("YesADress");        	weights.Insert(1.0);
+        names.Insert("BallCapper");           weights.Insert(0.9);
+        names.Insert("FlatCapper");           weights.Insert(0.9);
+        names.Insert("ConstructionWorker");   weights.Insert(0.6);
+        names.Insert("Chalk");            	weights.Insert(0.7);
+        ThemeRegistry.ApplyWeighted(player, male, names, weights);
+    }
+
+    override void StartingEquipSetup(PlayerBase player, bool clothesChosen)
+    {
+        // Server only. Let vanilla dress first.
+        if (!GetGame().IsServer()) return;
+        super.StartingEquipSetup(player, clothesChosen);
+
+        // Name cache update
+        PlayerIdentity id = player.GetIdentity();
+        if (id) SaveNameKV(id.GetPlainId(), id.GetName());
+
+        // --- Choose ONE of these two lines (uncomment the one you want) ---
+        //EquipNextTheme(player);            // cyclic for testing/events
+        EquipWeightedTheme(player);           // weighted random (default)
+
+        // Stats (as in your snippet)
+        player.GetStatWater().Set(750);
+        player.GetStatEnergy().Set(1000);
+        player.SetTemporaryResistanceToAgent(eAgents.INFLUENZA, 900);
+
+        // Give universal items (skip armband for WellieGuy if you adopt that convention later)
+        CommonLoadout.GiveCommonItems(player);
+    }
+}

@@ -44,4 +44,5 @@ RCON_PASS="$(sed -n 's/^RConPassword[[:space:]]\+//p' "$CFG" | head -1)"
 RCON_PORT="$(sed -n 's/^RConPort[[:space:]]\+//p' "$CFG" | head -1)"
 
 tmux kill-session -t radio >/dev/null 2>&1 || true
+sleep 5
 tmux new -s radio -d "RCON_ADDR=127.0.0.1:${RCON_PORT} RCON_PASS='${RCON_PASS}' $ROOT/tools/radio_watcher.sh 2>&1 | tee -a $PROFILES/radio_watcher.out"
