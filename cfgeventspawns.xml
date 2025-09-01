@@ -21,7 +21,7 @@
 		<event name="InfectedSanta" />
 		<event name="InfectedScientist" />
 		<event name="InfectedSolitude" />
-                <event name="InfectedWilderness" />
+        <event name="InfectedWilderness" />
 		<event name="InfectedVillage" />
 		<event name="InfectedVillageTier1" />
 		<event name="ItemPlanks">

@@ -626,18 +626,6 @@
             <child lootmax="5" lootmin="0" max="0" min="5" type="ZmbM_HunterOld_Winter"/>
         </children>
     </event>
-    <event name="InfectedWilderness" type="Infected" nominal="80" min="0" max="2" lifetime="1200" restock="200">
-        <saferadius>50</saferadius>
-        <distanceradius>120</distanceradius>
-        <cleanupradius>300</cleanupradius>
-        <flags deletable="1" init_random="1" remove_damaged="1" restock="1"/>
-        <position>player</position>
-        <active>1</active>
-        <children>
-            <child type="ZmbF_NurseFat" min="2" max="4" lootmin="0" lootmax="1"/>
-            <child type="ZmbM_ParamedicNormal_Blue" min="0" max="2" lootmin="0" lootmax="1"/>
-        </children>
-    </event>
     <event name="InfectedVillage">
         <nominal>50</nominal>
         <min>25</min>
@@ -697,6 +685,27 @@
             <child lootmax="5" lootmin="0" max="0" min="17" type="ZmbM_JoggerSkinny_Red"/>
             <child lootmax="5" lootmin="0" max="0" min="5" type="ZmbM_VillagerOld_Green"/>
         </children>
+    </event>
+    <event name="InfectedWilderness">
+        <nominal>60</nominal>
+        <min>5</min>
+        <max>65</max>
+        <lifetime>1200</lifetime>
+        <restock>60</restock>
+        <saferadius>30</saferadius>
+        <distanceradius>90</distanceradius>
+        <cleanupradius>200</cleanupradius>
+        <flags deletable="1" init_random="1" remove_damaged="1"/>
+        <position>player</position>
+        <active>1</active>
+        <children>
+            <child lootmax="5" lootmin="1" max="1" min="1" type="ZmbM_CommercialPilotOld_Blue"/>
+            <child lootmax="5" lootmin="1" max="1" min="1" type="ZmbF_NurseFat"/>
+            <child lootmax="5" lootmin="1" max="2" min="0" type="ZmbM_ParamedicNormal_Blue"/>
+            <child lootmax="5" lootmin="1" max="5" min="0" type="ZmbM_MotobikerFat_Black"/>
+            <child lootmax="5" lootmin="1" max="3" min="0" type="ZmbM_OffshoreWorker_Green"/>
+            <child lootmax="5" lootmin="1" max="1" min="1" type="ZmbF_PoliceWomanNormal"/> 
+       </children>
     </event>
     <event name="ItemPlanks">
         <nominal>15</nominal>

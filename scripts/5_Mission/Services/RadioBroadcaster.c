@@ -8,15 +8,25 @@ class RadioBroadcaster
     {
         array<Man> players = new array<Man>();
         GetGame().GetPlayers(players);
+
+        int total = players.Count();
+        int sent = 0;
+        ACHLog("[ACH][RADIO][DBG] attempting send to " + total + " players: \"" + msg + "\"");
+
         foreach (Man m : players)
         {
             PlayerBase p = PlayerBase.Cast(m);
             if (!p) continue;
-            if (HasWorkingRadio(p /*, TARGET_FREQ, msg*/))
+            bool ok = HasWorkingRadio(p);
+            ACHLog("[ACH][RADIO][DBG] player=" + p.GetIdentity().GetName() + " radio_ok=" + ok);
+
+            if (ok)
             {
                 p.MessageStatus(msg);
+                sent++;
             }
         }
+        ACHLog("[ACH][RADIO][DBG] delivered=" + sent + " / " + total);
     }
 
     // Minimal, safe check: radio exists and is powered + working.

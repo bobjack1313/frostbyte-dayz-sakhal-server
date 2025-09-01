@@ -28,6 +28,7 @@ tmux new-session -d -s "$SESSION" bash -lc '
     -profiles="'"$PROFILES"'" \
     -mission="./mpmissions/dayzOffline.sakhal" \
     -BEpath="'"$ROOT"'/battleye" \
+    -mod="@CF;@Community-Online-Tools;@VPPAdminTools;@VPPNotifications" \
     -dologs -adminlog -netlog -scrAllowFileWrite \
     |& tee -a "'"$LOG"'"
 '

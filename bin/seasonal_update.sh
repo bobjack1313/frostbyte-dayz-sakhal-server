@@ -25,6 +25,7 @@ CFG="$ROOT/serverDZ.cfg"
 GAME_TIME_FILE="$ROOT/game_time.txt"
 SEASONAL_LOG="$ROOT/seasonal.log"
 LATITUDE_FILE="$ROOT/latitude.txt"
+REBOOT_HOURS=10
 
 require bc
 
@@ -54,7 +55,7 @@ else
 fi
 
 # ---------- advance by reboot window ----------
-HOURS_TO_ADD=$((7 * TIME_ACCEL))
+HOURS_TO_ADD=$((REBOOT_HOURS * TIME_ACCEL))
 CURRENT_GAME_HOURS=$((CURRENT_GAME_HOURS + HOURS_TO_ADD))
 
 # ---------- wrap yearly ----------

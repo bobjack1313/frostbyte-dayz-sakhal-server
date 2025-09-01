@@ -2,6 +2,7 @@ class CustomMission : MissionServer
 {
     // ---- cyclic index persistence ----
     protected int mThemeIndex;
+    ref PlayerCommands m_PC;
 
     protected string ThemeIndexPath()
     {
@@ -41,9 +42,14 @@ class CustomMission : MissionServer
     override void OnInit()
     {
         super.OnInit();
+        if (!m_PC) {
+            m_PC = new PlayerCommands();
+            ACHLog("[CM] PlayerCommands created in OnInit");
+        }
+        m_PC.LoadAdmins();
         GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(RadioSchedulerTick, 2000, true);
         MissionTime.Start();
-        //WeatherService.Start(60.0); // ok if silent for now   
+        WeatherService.Start(60.0);
     }
 
     void RadioSchedulerTick()
@@ -91,6 +97,45 @@ class CustomMission : MissionServer
                 }
             } else {
                 ACHLog("[NAMECACHE] ClientReady: no PlayerIdentity found in params");
+            }
+        }
+        else  if (eventTypeId == ChatMessageEventTypeID)
+        {
+            ChatMessageEventParams chat = ChatMessageEventParams.Cast(params);
+            if (!chat)
+            {
+                ACHLog("Chat not found in ChatMessageEventParams.");
+                return;
+            }
+            ACHLog("Chat found. ");
+            // param1 = channel, param2 = sender name, param3 = text
+            string msg = chat.param3;
+            ACHLog("Chat found. msg=" + msg);
+            if (msg == "" || msg.Length() < 1) return;
+
+            string first = msg.Substring(0, 1);
+            if (!(first == "!" || first == "/")) return;
+
+            // resolve identity by matching sender name
+            string senderName = chat.param2;
+            PlayerIdentity ident = null;
+
+            array<Man> players = new array<Man>();
+            GetGame().GetPlayers(players);
+            foreach (Man m : players) {
+                PlayerBase pBase = PlayerBase.Cast(m);
+                if (!pBase) continue;
+                PlayerIdentity pi = pBase.GetIdentity();
+                if (pi && pi.GetName() == senderName) {
+                     ident = pi;
+                     ACHLog("Breaking on player identity"); 
+                     break;
+                }
+            }
+
+            if (ident) {
+                ACHLog("Identity found, handling message");
+                m_PC.HandleChatCommand(ident, msg);
             }
         }
     }

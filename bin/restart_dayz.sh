@@ -38,7 +38,7 @@ log "start: invoking start_dayz.sh"
 log "wait: listeners"
 for i in {1..60}; do
   a=$(ss -lunp | grep -c ':2302\|:2304') || true
-  b=$(ss -lunp | grep -c ':2306') || true
+  b=$(ss -lunp | grep -c ':2305') || true
   if [[ $a -gt 0 && $b -gt 0 ]]; then break; fi
   sleep 1
 done
@@ -51,3 +51,4 @@ TOKEN="RESTART_OK_$(date +%H%M%S)"
 "$ROOT/bin/rcon.sh" "say -1 ✅ Server back up. Token: $TOKEN" || true
 
 log "done"
+

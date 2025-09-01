@@ -34,4 +34,5 @@
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/5_Mission/Services/WeatherService.c"
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/5_Mission/Services/RadioBroadcaster.c"
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/5_Mission/Services/RadioQueue.c"
+#include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/5_Mission/PlayerCommands.c"
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/5_Mission/CustomMission.c"
