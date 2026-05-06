@@ -8,8 +8,9 @@ class Theme_WellieGuy
 
         // Palette
         autoptr array<string> coats = {
-            "Raincoat_Black","Raincoat_Blue","Raincoat_Green","Raincoat_Orange",
-            "Raincoat_Red","Raincoat_Pink","Raincoat_Yellow"
+//            "Raincoat_Black","Raincoat_Blue","Raincoat_Green","Raincoat_Orange",
+//            "Raincoat_Red","Raincoat_Pink","Raincoat_Yellow"
+              "Raincoat_Blue","Raincoat_Red","Raincoat_Yellow",
         };
         autoptr array<string> wellies = { "Wellies_Grey","Wellies_Green","Wellies_Black","Wellies_Brown" };
 
@@ -27,28 +28,29 @@ class Theme_WellieGuy
                 skirt = "Skirt_Blue";
                 break;
 
-            case "Raincoat_Green":
-                hatChoices.Insert("BoonieHat_Olive");
-                skirt = "Skirt_White";
-                break;
+      //      case "Raincoat_Green":
+      //         hatChoices.Insert("BoonieHat_Olive");
+      //         skirt = "Skirt_White";
+      //         break;
 
-            case "Raincoat_Orange":
-                hatChoices.Insert("BoonieHat_Orange");
-                skirt = "Skirt_Yellow";
-                break;
+       //     case "Raincoat_Orange":
+       //         hatChoices.Insert("BoonieHat_Orange");
+       //         skirt = "Skirt_Yellow";
+       //         break;
 
             case "Raincoat_Red":
                 hatChoices.Insert("BoonieHat_Red");
                 skirt = "Skirt_Red";
                 break;
 
-            case "Raincoat_Pink":
-                hatChoices.Insert("BoonieHat_Black");
-                hatChoices.Insert("BoonieHat_NavyBlue");
-                skirt = "Skirt_White";
-                break;
+        //    case "Raincoat_Pink":
+         //       hatChoices.Insert("BoonieHat_Black");
+         //       hatChoices.Insert("BoonieHat_NavyBlue");
+         //       skirt = "Skirt_White";
+         //       break;
 
             case "Raincoat_Yellow":
+            default:      
                 hatChoices.Insert("BoonieHat_Black");
                 hatChoices.Insert("BoonieHat_Blue");
                 hatChoices.Insert("BoonieHat_NavyBlue");
@@ -56,11 +58,11 @@ class Theme_WellieGuy
                 skirt = "Skirt_Yellow";
                 break;
 
-            case "Raincoat_Black":
-            default:
-                hatChoices.Insert("BoonieHat_Black");
-                skirt = "Skirt_Blue";
-                break;
+       //     case "Raincoat_Black":
+       //     default:
+       //         hatChoices.Insert("BoonieHat_Black");
+       //         skirt = "Skirt_Blue";
+       //         break;
         }
 
         // Equip: raincoat PRISTINE; others worn

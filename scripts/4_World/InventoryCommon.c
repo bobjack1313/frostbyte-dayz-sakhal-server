@@ -4,23 +4,32 @@ class CommonLoadout
     static void GiveRandomArmband(PlayerBase p)
     {
         if (!p) return;
+        // Approved team colors (edit as needed)
         autoptr array<string> colors = {
-            "Armband_White","Armband_Yellow","Armband_Orange","Armband_Red",
-            "Armband_Green","Armband_Blue","Armband_Black"
+            "Armband_Blue",
+            "Armband_Red",
+            "Armband_Yellow"
         };
-        string pick = colors[Math.RandomInt(0, colors.Count())];
-        // remove any existing armband (server-authoritative)
+
         EntityAI existing = p.FindAttachmentBySlotName("Armband");
         if (existing) {
+            string have = existing.GetType();
+
+            for (int i = 0; i < colors.Count(); i++) {
+                if (have == colors.Get(i)) {
+                    return;
+                }
+            }
+
             GetGame().ObjectDelete(existing);
         }
 
-        int slotId = InventorySlots.GetSlotIdFromString("Armband");
+        string pick = colors.Get(Math.RandomInt(0, colors.Count()));
 
-        // try direct slot attach first
+        int slotId = InventorySlots.GetSlotIdFromString("Armband");
         EntityAI a = p.GetInventory().CreateAttachmentEx(pick, slotId);
+
         if (!a) {
-            // fallback: create in inventory, then server-take into slot
             EntityAI inv = p.GetInventory().CreateInInventory(pick);
             if (inv) {
                 p.GetInventory().TakeEntityAsAttachmentEx(InventoryMode.SERVER, inv, slotId);

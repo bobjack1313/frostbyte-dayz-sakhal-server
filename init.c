@@ -21,4 +21,3 @@ Mission CreateCustomMission(string path)
 {
     return new CustomMission(); // implemented in scripts/5_Mission/CustomMission.c
 }
-

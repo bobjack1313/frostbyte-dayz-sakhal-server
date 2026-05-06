@@ -37,9 +37,17 @@ log "start: invoking start_dayz.sh"
 # wait for listeners (game + BE)
 log "wait: listeners"
 for i in {1..60}; do
-  a=$(ss -lunp | grep -c ':2302\|:2304') || true
-  b=$(ss -lunp | grep -c ':2305') || true
-  if [[ $a -gt 0 && $b -gt 0 ]]; then break; fi
+  ss -lunp | grep -E ':(2302|2304|2305|2306)\b' || true
+
+  game=$(ss -lunp | grep -c ':2302') || true
+  steam=$(ss -lunp | grep -c ':2304') || true
+  query=$(ss -lunp | grep -c ':2305') || true
+
+  if [[ $game -gt 0 && $steam -gt 0 && $query -gt 0 ]]; then
+    log "listeners ready: 2302/2304/2305"
+    break
+  fi
+
   sleep 1
 done
 
