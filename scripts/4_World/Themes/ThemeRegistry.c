@@ -26,6 +26,11 @@ class ThemeRegistry
         a.Insert("YesADress");
         a.Insert("ConstructionWorker");
         a.Insert("BallCapper");
+        a.Insert("FoxyTrapper");
+        a.Insert("GrizzlyAdams");
+        a.Insert("Negan");
+        a.Insert("TheFonz");
+        a.Insert("Pilot");
         return a;
     }
 
@@ -103,7 +108,10 @@ class ThemeRegistry
         if (name == "YesADress")         { Theme_YesADress.Apply(p, male); return; }
         if (name == "ConstructionWorker"){ Theme_ConstructionWorker.Apply(p, male); return; }
         if (name == "BallCapper")        { Theme_BallCapper.Apply(p, male); return; }
-
-        Theme_Chalk.Apply(p, male);
+        if (name == "FoxyTrapper")       { Theme_FoxyTrapper.Apply(p, male); return; }
+        if (name == "GrizzlyAdams")      { Theme_GrizzlyAdams.Apply(p, male); return; }
+        if (name == "Negan")             { Theme_Negan.Apply(p, male); return; }
+        if (name == "TheFonz")           { Theme_TheFonz.Apply(p, male); return; }
+        if (name == "Pilot")             { Theme_Pilot.Apply(p, male); return; }
     }
 }

@@ -173,27 +173,33 @@ class CustomMission : MissionServer
         ref array<string> names   = new array<string>;
         ref array<float>  weights = new array<float>;
 
-        //names.Insert("WellieGuy");              weights.Insert(0.0);
-        //names.Insert("Shaman");                 weights.Insert(0.0);
-        //names.Insert("Cowboy");                 weights.Insert(0.0);
-        //names.Insert("Prisoner");               weights.Insert(0.0);
-        //names.Insert("Cop");                    weights.Insert(0.0);
-        //names.Insert("Professional");           weights.Insert(0.0);
-        //names.Insert("SorryNotSorry");          weights.Insert(0.0);
-        //names.Insert("Paramedic");              weights.Insert(0.0);
-        //names.Insert("Nurse");                  weights.Insert(1.0);
-        //names.Insert("Doctor");                 weights.Insert(0.0);
-        //names.Insert("Mummy");                  weights.Insert(0.0);
-        //names.Insert("TrackStar");              weights.Insert(0.0);
-        //names.Insert("Sailor");                 weights.Insert(0.0);
-        //names.Insert("Thug");                   weights.Insert(0.0);
-        //names.Insert("Hiker");                  weights.Insert(0.0);
-        //names.Insert("FlatCapper");             weights.Insert(0.0);
-        //names.Insert("LabRat");                 weights.Insert(0.0);
-        //names.Insert("YesADress");              weights.Insert(0.0);
-        //names.Insert("ConstructionWorker");     weights.Insert(0.0);
-        //names.Insert("BallCapper");             weights.Insert(0.0);
-        //names.Insert("Chalk");                  weights.Insert(0.0);
+        // names.Insert("WellieGuy");              weights.Insert(0.0);
+        // names.Insert("Shaman");                 weights.Insert(0.0);
+        // names.Insert("Cowboy");                 weights.Insert(0.0);
+        // names.Insert("Prisoner");               weights.Insert(0.0);
+        // names.Insert("Cop");                    weights.Insert(0.0);
+        // names.Insert("Professional");           weights.Insert(0.0);
+        // names.Insert("SorryNotSorry");          weights.Insert(0.0);
+        // names.Insert("Paramedic");              weights.Insert(0.0);
+        // names.Insert("Nurse");                  weights.Insert(0.0);
+        // names.Insert("Doctor");                 weights.Insert(0.0);
+        // names.Insert("Mummy");                  weights.Insert(0.0);
+        // names.Insert("TrackStar");              weights.Insert(0.0);
+        // names.Insert("Sailor");                 weights.Insert(0.0);
+        // names.Insert("Thug");                   weights.Insert(0.0);
+        // names.Insert("Hiker");                  weights.Insert(0.0);
+        // names.Insert("FlatCapper");             weights.Insert(0.0);
+        // names.Insert("LabRat");                 weights.Insert(0.0);
+        // names.Insert("YesADress");              weights.Insert(0.0);
+        // names.Insert("ConstructionWorker");     weights.Insert(0.0);
+        // names.Insert("BallCapper");             weights.Insert(0.0);
+        // names.Insert("FoxyTrapper");            weights.Insert(0.0);
+        // names.Insert("GrizzlyAdams");           weights.Insert(0.0);
+        // names.Insert("Negan");                  weights.Insert(0.0);
+        // names.Insert("TheFonz");                weights.Insert(0.0);
+        // names.Insert("Pilot");                  weights.Insert(0.0);
+        // names.Insert("Chalk");                  weights.Insert(0.0);
+
 
         names.Insert("WellieGuy");        	weights.Insert(1.0);
         names.Insert("Shaman");           	weights.Insert(1.0);
@@ -212,10 +218,15 @@ class CustomMission : MissionServer
         names.Insert("Hiker");            	weights.Insert(0.8);
         names.Insert("LabRat");           	weights.Insert(0.75);
         names.Insert("YesADress");        	weights.Insert(1.0);
-        names.Insert("BallCapper");           weights.Insert(0.9);
-        names.Insert("FlatCapper");           weights.Insert(0.9);
-        names.Insert("ConstructionWorker");   weights.Insert(0.6);
-        names.Insert("Chalk");            	weights.Insert(0.7);
+        names.Insert("BallCapper");         weights.Insert(0.9);
+        names.Insert("FlatCapper");         weights.Insert(0.9);
+        names.Insert("ConstructionWorker"); weights.Insert(0.6);
+        names.Insert("FoxyTrapper");        weights.Insert(0.6);
+        names.Insert("GrizzlyAdams");       weights.Insert(0.4);
+        names.Insert("Negan");              weights.Insert(0.3);
+        names.Insert("TheFonz");            weights.Insert(0.6);
+        names.Insert("Pilot");              weights.Insert(0.7);
+        names.Insert("Chalk");              weights.Insert(0.4);
         ThemeRegistry.ApplyWeighted(player, male, names, weights);
     }
 

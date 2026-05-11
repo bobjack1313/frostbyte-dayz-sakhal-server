@@ -26,3 +26,7 @@ storage_4/
 pra/warheadstorage.json
 
 areaflags.map
+
+
+# Now generated every restart
+db/messages.xml

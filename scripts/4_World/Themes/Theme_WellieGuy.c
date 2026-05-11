@@ -8,7 +8,8 @@ class Theme_WellieGuy
 
         // Palette
         autoptr array<string> coats = {
-//            "Raincoat_Black","Raincoat_Blue","Raincoat_Green","Raincoat_Orange",
+            "Raincoat_Pink","Raincoat_Black",
+           // "Raincoat_Black","Raincoat_Blue","Raincoat_Green","Raincoat_Orange",
 //            "Raincoat_Red","Raincoat_Pink","Raincoat_Yellow"
               "Raincoat_Blue","Raincoat_Red","Raincoat_Yellow",
         };
@@ -43,11 +44,11 @@ class Theme_WellieGuy
                 skirt = "Skirt_Red";
                 break;
 
-        //    case "Raincoat_Pink":
-         //       hatChoices.Insert("BoonieHat_Black");
-         //       hatChoices.Insert("BoonieHat_NavyBlue");
-         //       skirt = "Skirt_White";
-         //       break;
+           case "Raincoat_Pink":
+               hatChoices.Insert("BoonieHat_Black");
+               hatChoices.Insert("BoonieHat_NavyBlue");
+               skirt = "Skirt_White";
+               break;
 
             case "Raincoat_Yellow":
             default:      
@@ -58,11 +59,11 @@ class Theme_WellieGuy
                 skirt = "Skirt_Yellow";
                 break;
 
-       //     case "Raincoat_Black":
-       //     default:
-       //         hatChoices.Insert("BoonieHat_Black");
-       //         skirt = "Skirt_Blue";
-       //         break;
+           case "Raincoat_Black":
+           default:
+               hatChoices.Insert("BoonieHat_Black");
+               skirt = "Skirt_Blue";
+               break;
         }
 
         // Equip: raincoat PRISTINE; others worn

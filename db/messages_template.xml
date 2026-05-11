@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messages>
+    <message>
+        <onconnect>1</onconnect>
+        <delay>0</delay>
+        <text>Welcome to the Frostbyte server! !help shows you some available commands.</text>
+    </message>
+    <message>
+        <onconnect>1</onconnect>
+        <delay>1</delay>
+        <text>Server restarts every 10 hours. Watch for countdowns.</text>
+    </message>
+    <message>
+        <onconnect>1</onconnect>
+        <delay>2</delay>
+        <text>No cheating. No exploiting. Report issues via !report or Discord.</text>
+    </message>
+
+    <message>
+        <delay>1200</delay>
+        <repeat>18000</repeat>
+        <text>Monitor your personal radio frequency for special alerts, information and even deaths.</text>
+    </message>
+    <message>
+        <delay>2400</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_1</text>
+    </message>
+    <message>
+        <delay>3600</delay>
+        <repeat>18000</repeat>
+        <text>This is Frostbyte. Report issues via !report or Discord.</text>
+    </message>
+    <message>
+        <delay>4800</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_2</text>
+    </message>
+    <message>
+        <delay>6000</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_3</text>
+    </message>
+    <message>
+        <delay>7200</delay>
+        <repeat>18000</repeat>
+        <text>Server restarts are announced 15 minutes before shutdown.</text>
+    </message>
+    <message>
+        <delay>8400</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_4</text>
+    </message>
+    <message>
+        <delay>9600</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_5</text>
+    </message>
+    <message>
+        <delay>10800</delay>
+        <repeat>18000</repeat>
+    <text>Each new spawn you will get a new starting role. Play them all!</text>
+    </message>
+    <message>
+        <delay>12000</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_6</text>
+    </message>
+    <message>
+        <delay>13200</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_7</text>
+    </message>
+    <message>
+        <delay>14400</delay>
+        <repeat>18000</repeat>
+        <text>Use !report or Discord to report bugs, exploits, or suspicious behavior.</text>
+    </message>
+    <message>
+        <delay>15600</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_8</text>
+    </message>
+    <message>
+        <delay>16800</delay>
+        <repeat>18000</repeat>
+    <text>MESSAGE_HUMOR_9</text>
+    </message>
+</messages>

@@ -9,7 +9,7 @@ class WeatherService
     {
         if (s_Started) return;
         s_Started = true;
-        ACHLog("[ACH][RADIO][DBG] WeatherService.Start scheduling Tick=" + periodSec + "s");
+        ACHLog("[FROSTBYTE RADIO][DBG] WeatherService.Start scheduling Tick=" + periodSec + "s");
         GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(Tick, (int)(periodSec * 1000), true);
         GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(Report, 5 * 60 * 1000, true);
         GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(SelfTest, 5000, false);
@@ -17,8 +17,8 @@ class WeatherService
 
     static void SelfTest()
     {
-        string msg = "[RADIO 87.8] Weather system self-test";
-        ACHLog("[ACH][RADIO][DBG] SelfTest firing: " + msg);
+        string msg = "[FROSTBYTE RADIO] Weather system self-test";
+        ACHLog("[FROSTBYTE RADIO][DBG] SelfTest firing: " + msg);
         RadioBroadcaster.Broadcast(msg);
     }
 
@@ -46,7 +46,7 @@ class WeatherService
         float sfA = w.GetSnowfall().GetActual();
         float sfF = w.GetSnowfall().GetForecast();
 
-        string line1 = "[ACH][WEATHER] ocA=" + ocA + " ocF=" + ocF;
+        string line1 = "[FROSTBYTE WEATHER] ocA=" + ocA + " ocF=" + ocF;
         line1 = line1 + " sfA=" + sfA + " sfF=" + sfF + " fgA=" + fgA;
         line1 = line1 +  " fgF=" + fgF + " windSpd=" + windSpeed + " wfSpeed=" + wfSpeed + " windDir=" + windDirDeg;
         WeatherLog(line1);
@@ -59,7 +59,7 @@ class WeatherService
 
         // entering (announce once, rate-limited)
         if (!s_StormDeclared && stormComing && (nowMs - s_StormLastAlertMs) > s_StormCooldownMs) {
-            string warnIn = "[ACH][RADIO] Weather alert: Thunderstorm developing. Expect lightning and heavy clouds.";
+            string warnIn = "[FROSTBYTE RADIO] Weather alert: Thunderstorm developing. Expect lightning and heavy clouds.";
             ACHLog(warnIn);
             RadioBroadcaster.Broadcast(warnIn);
             WeatherLog(warnIn);
@@ -69,7 +69,7 @@ class WeatherService
 
         // exiting (announce once while in storm and forecast drops below threshold)
         if (s_StormDeclared && stormClearingSoon && (nowMs - s_StormLastAlertMs) > s_StormCooldownMs) {
-            string warnOut = "[ACH][RADIO] Weather update: Thunderstorm weakening. Lightning risk decreasing.";
+            string warnOut = "[FROSTBYTE RADIO] Weather update: Thunderstorm weakening. Lightning risk decreasing.";
             ACHLog(warnOut);
             RadioBroadcaster.Broadcast(warnOut);
             WeatherLog(warnOut);
@@ -114,17 +114,28 @@ class WeatherService
 
         // One clean line
         int windRound = Math.Round(windKmh);
-        string lineA = "[ACHILLES RADIO] Current conditions: ";
+        string lineA = "[FROSTBYTE  RADIO] Current conditions: ";
         lineA = lineA + snowTxt;
-	if (snowTxt == "Blizzard conditions")
+
+	    if (snowTxt == "Blizzard in effect")
         {
             lineA = lineA + ". ";
         }
         else
         {
-            lineA = lineA + " with " + fogTxt + " and " + cloudTxt + ". ";
-        }        
- 	if (windRound < 3) 
+            if (fogTxt == "no fog")
+            {
+                lineA = lineA + " with " + cloudTxt;
+            }
+            else
+            {
+                lineA = lineA + " with " + fogTxt + " and " + cloudTxt;
+            }
+
+            lineA = lineA + ". ";
+        }
+
+ 	    if (windRound < 3)
         {
             lineA = lineA + "Calm wind conditions.";
         }
@@ -176,7 +187,7 @@ class WeatherService
     static string SnowPhrase(float sfA, float windKmh)
     {
         // Upgrade to blizzard if heavy snow + strong winds (common forecast convention)
-        if (sfA >= 0.80 || (sfA >= 0.65 && windKmh >= 50.0)) return "Blizzard conditions";  // 6
+        if (sfA >= 0.80 || (sfA >= 0.65 && windKmh >= 50.0)) return "Blizzard in effect";  // 6
         if (sfA >= 0.65) return "Heavy snow";      // 5
         if (sfA >= 0.50) return "Moderate snow";   // 4      
         if (sfA >= 0.35) return "Snow";            // 3  (steady/moderate)

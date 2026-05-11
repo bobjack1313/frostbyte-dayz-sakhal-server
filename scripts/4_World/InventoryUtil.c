@@ -93,4 +93,33 @@ class InventoryUtil
     {
         if (p && item) p.SetQuickBarEntityShortcut(item, idx);
     }
+
+    // ---- shoulderslot ----
+    static EntityAI PutOnShoulder(PlayerBase p, string cls, float hMin = 0.45, float hMax = 0.80)
+    {
+        if (!p || cls == "") return null;
+
+        EntityAI item = p.GetInventory().CreateAttachment(cls);
+        if (item) {
+            SetRange(item, hMin, hMax);
+            return item;
+        }
+
+        int shoulderSlot = InventorySlots.GetSlotIdFromString("Shoulder");
+        item = p.GetInventory().CreateAttachmentEx(cls, shoulderSlot);
+        if (item) {
+            SetRange(item, hMin, hMax);
+            return item;
+        }
+
+        item = p.GetInventory().CreateInInventory(cls);
+        if (item) {
+            p.GetInventory().TakeEntityAsAttachmentEx(InventoryMode.SERVER, item, shoulderSlot);
+            SetRange(item, hMin, hMax);
+            return item;
+        }
+
+        ACHLog("[ACH][Shoulder] failed to attach " + cls);
+        return null;
+    }
 }

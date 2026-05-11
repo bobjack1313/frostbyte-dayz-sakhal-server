@@ -27,6 +27,11 @@
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_Shaman.c"
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_ConstructionWorker.c"
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_Chalk.c"
+#include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_FoxyTrapper.c"
+#include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_GrizzlyAdams.c"
+#include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_Negan.c"
+#include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_TheFonz.c"
+#include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/Theme_Pilot.c"
 #include "$CurrentDir:./mpmissions/dayzOffline.sakhal/scripts/4_World/Themes/ThemeRegistry.c"
 
 // --- 5_Mission ---
