@@ -42,7 +42,8 @@ lines = [
 
 placeholders = sorted(
     set(re.findall(r"MESSAGE_HUMOR_(\d+)", template)),
-    key=lambda x: int(x)
+    key=lambda x: int(x),
+    reverse=True
 )
 
 if not placeholders:
