@@ -110,7 +110,7 @@ log "Daylight hours: $DAYLIGHT_HOURS, Night hours: $NIGHT_HOURS"
 
 # Keep real night duration near a 12-hour baseline by adjusting night acceleration.
 DEFAULT_NIGHT_HOURS=12
-NIGHT_RATIO=$(echo "scale=6; $DEFAULT_NIGHT_HOURS / $NIGHT_HOURS" | bc -l)
+NIGHT_RATIO=$(echo "scale=6; $DAYLIGHT_HOURS / $NIGHT_HOURS" | bc -l)
 
 if [ -z "$NIGHT_RATIO" ]; then
     log "ERROR: night ratio calculation failed"
